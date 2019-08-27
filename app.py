@@ -74,8 +74,8 @@ def login():
         user = User.authenticate(username, password)
 
         if user:
-            session["user_id"] = user.id
-            return redirect("/secret")
+            session["username"] = user.username
+            return redirect("/users/<username>")
 
         else:
             form.username.errors = ["Bad name/password"]
@@ -83,7 +83,22 @@ def login():
     return render_template("login_form.html", form=form)
 
 
-@app.route("/secret")
-def display_secret_page():
+@app.route("/users/<username>")
+def display_user_page(username):
 
-    return render_template("secret_page.html")
+    user_from_db = User.query.filter_by(username=username).first()
+
+    if "username" not in session:
+        return redirect("/")
+
+    else: 
+        return render_template("user_page.html", user_from_db=user_from_db)
+
+
+@app.route("/logout")
+def logout():
+
+    session.pop("username")
+    return redirect("/")
+
+

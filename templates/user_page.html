@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %} {% endblock  %}
+
+{% block content %}
+
+
+
+
+<h1>User Page</h1>
+
+{{user_from_db.username}}
+<br>
+
+{{user_from_db.email}}
+<br>
+{{user_from_db.first_name}}
+<br>
+
+{{user_from_db.last_name}}
+
+
+{% endblock  %}
