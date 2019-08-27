@@ -16,8 +16,20 @@
 <br>
 {{user_from_db.first_name}}
 <br>
-
 {{user_from_db.last_name}}
+<br>
 
+<a href="/users/{{user_from_db.username}}/feedback/add">Create a new feedback!</a>
+<form method="POST" action="/users/{{user_from_db.username}}/delete">
+    <button>
+        Delete my account
+    </button>
+</form>
+<ul>
+    {% for feedback in feedbacks %}
+    <li>{{feedback.title}}</li>
+
+    {% endfor %}
+</ul>
 
 {% endblock  %}

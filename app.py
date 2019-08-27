@@ -1,6 +1,6 @@
 from flask import Flask, redirect, render_template, jsonify, request, flash, session
-from models import User, connect_db, db
-from forms import AddUserForm, UserLoginForm
+from models import User, Feedback, connect_db, db
+from forms import AddUserForm, UserLoginForm, FeedbackForm
 import bcrypt
 from flask_bcrypt import Bcrypt
 # from flask_debugtoolbar import DebugToolbarExtension
@@ -88,11 +88,13 @@ def display_user_page(username):
 
     user_from_db = User.query.filter_by(username=username).first()
 
+    all_feedbacks = Feedback.query.all()
+
     if "username" not in session:
         return redirect("/")
 
     else: 
-        return render_template("user_page.html", user_from_db=user_from_db)
+        return render_template("user_page.html", user_from_db=user_from_db, feedbacks=all_feedbacks)
 
 
 @app.route("/logout")
@@ -102,3 +104,46 @@ def logout():
     return redirect("/")
 
 
+
+@app.route("/users/<username>/feedback/add")
+def display_feedback_form(username):
+
+    form = FeedbackForm()
+    return render_template("add_feedback_form.html", form=form)
+
+
+@app.route("/users/<username>/feedback/add", methods=["POST"])
+def process_feedback_form(username):
+
+    user_from_db = User.query.filter_by(username=username).first()
+
+    form = FeedbackForm()
+
+    if form.validate_on_submit():
+        title = form.title.data
+        content = form.content.data
+        username = form.username.data
+    
+        new_feedback = Feedback(title=title, content=content, username=username)
+        flash(f"Added {title}")
+        
+        db.session.add(new_feedback)
+        db.session.commit()
+
+        return redirect(f"/users/{user_from_db.username}")
+
+    else:
+        return render_template("add_feedback_form.html", form=form)
+
+
+@app.route("/users/<username>/delete", methods=["POST"])
+def delete_user(username):
+
+    if session["username"]:
+
+        user_from_db = User.query.filter_by(username=username).first()
+
+        db.session.delete(user_from_db)
+        db.session.commit()
+
+    return redirect("/")
