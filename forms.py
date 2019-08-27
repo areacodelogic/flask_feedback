@@ -11,5 +11,12 @@ class AddUserForm(FlaskForm):
     last_name = StringField("Last Name")
 
 
+class UserLoginForm(FlaskForm):
+
+    username = StringField("Username")
+    password = StringField("Password")
+
+
+
 
 
